@@ -113,15 +113,15 @@ func (m *MockService) CreateJob(ctx context.Context, newJob models.Job, userId s
 	return ret0, ret1
 }
 
-func (mr *MockServiceMockRecorder) CreateJob(ctx, newJob, userId interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) CreateJob(ctx, newJob interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateJob", reflect.TypeOf((*MockService)(nil).CreateJob), ctx, newJob, userId)
 }
 
-func (m *MockService) AllJob(ctx context.Context, userId string) ([]models.Job, error) {
+func (m *MockService) AllJob(ctx context.Context) (models.Job, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "AllJob", ctx, userId)
-	ret0, _ := ret[0].([]models.Job)
+	ret := m.ctrl.Call(m, "AllJob", ctx)
+	ret0, _ := ret[0].(models.Job)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

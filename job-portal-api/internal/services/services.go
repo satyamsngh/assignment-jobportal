@@ -16,7 +16,7 @@ type Service interface {
 	ViewCompanies(ctx context.Context, companyId string) ([]models.Companies, error)
 	ViewCompaniesById(ctx context.Context, companybyid uint, userId string) ([]models.Companies, error)
 	CreateUser(ctx context.Context, nu models.NewUser) (models.User, error)
-	CreateJob(ctx context.Context, newJob models.Job, userId string) (models.Job, error)
+	CreateJob(ctx context.Context, newJob models.NewJob, userId string) (models.Job, error)
 	AllJob(ctx context.Context, userId string) ([]models.Job, error)
 	ListJobs(ctx context.Context, companyId uint, userId string) ([]models.Job, error)
 	Authenticate(ctx context.Context, email, password string) (jwt.RegisteredClaims,

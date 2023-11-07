@@ -28,13 +28,26 @@ func (r *Repo) ViewJobByCompanyId(ctx context.Context, id uint) ([]models.Job, e
 	return jobs, nil
 }
 
-func (r *Repo) CreateJob(ctx context.Context, jobData models.Job) (models.Job, error) {
-	result := r.DB.Create(&jobData)
+func (r *Repo) CreateJob(ctx context.Context, jobData models.NewJob) (models.Job, error) {
+	job := models.Job{
+		CompanyID:       jobData.CompanyID,
+		MinNoticePeriod: jobData.MinNoticePeriod,
+		MaxNoticePeriod: jobData.MaxNoticePeriod,
+		Budget:          jobData.Budget,
+		JobLocations:    jobData.JobLocations,
+		Technology:      jobData.Technology,
+		WorkMode:        jobData.WorkMode,
+		MaxExp:          jobData.MaxExp,
+		Qualification:   jobData.Qualification,
+		Shift:           jobData.Shift,
+		JobType:         jobData.JobType,
+	}
+	result := r.DB.Create(&job)
 
 	if result.Error != nil {
 		return models.Job{}, result.Error
 	}
-	return jobData, nil
+	return job, nil
 }
 
 func (r *Repo) FindAllJobs(ctx context.Context) ([]models.Job, error) {

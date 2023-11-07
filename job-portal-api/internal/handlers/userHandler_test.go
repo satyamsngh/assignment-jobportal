@@ -72,7 +72,7 @@ func TestRegister(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			//this func give us the mock implementation of the interface
 			mockService := services.NewMockService(ctrl)
-			s := services.NewStore(mockService)
+			s, err := services.NewStore(mockService)
 
 			// Apply the mock to the user service.
 			tc.mockUserService(mockService)

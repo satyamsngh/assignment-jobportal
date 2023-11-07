@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"job-portal-api/internal/models"
+	"strconv"
 	"sync"
 )
 
@@ -41,9 +42,9 @@ func (s *Store) ViewCompaniesById(ctx context.Context, companyID uint, userID st
 
 	return company, nil
 }
-func (s *Store) CreateJob(ctx context.Context, job models.Job, userID string) (models.Job, error) {
+func (s *Store) CreateJob(ctx context.Context, jobs models.NewJob, userID string) (models.Job, error) {
 
-	job, err := s.UserRepo.CreateJob(ctx, job)
+	job, err := s.UserRepo.CreateJob(ctx, jobs)
 	if err != nil {
 		return models.Job{}, err
 	}
@@ -106,13 +107,15 @@ func (s *Store) CriteriaMeets(ctx context.Context, applicant []models.Applicatio
 }
 func CriteriaCheck(app models.Application, job models.Job) bool {
 
-	// Compare Min Notice Period
-	if app.MinNoticePeriod < job.MinNoticePeriod {
+	//Compare Min Notice Period
+	a, _ := strconv.Atoi(job.MinNoticePeriod)
+	if app.NoticePeriod < a {
 		return false
 	}
 
 	// Compare Max Notice Period
-	if app.MaxNoticePeriod > job.MaxNoticePeriod {
+	a, _ = strconv.Atoi(job.MaxNoticePeriod)
+	if app.NoticePeriod > a {
 		return false
 	}
 
@@ -120,45 +123,64 @@ func CriteriaCheck(app models.Application, job models.Job) bool {
 	if app.Budget > job.Budget {
 		return false
 	}
-
+	//
 	// Compare Job Locations (Assuming both are ordered lists)
-	if len(app.JobLocations) != len(job.JobLocations) {
-		return false
-	}
+	//if app.JobLocations[0] != job.JobLocations[0] {
+	//	return false
+	//}
+	//for _,v:=range app.JobLocations{
+	//	for _,c:=range job.JobLocations{
+	//		if
+	//	}
+	//}
 
-	for i, loc := range app.JobLocations {
-		if loc.Location != job.JobLocations[i].Location {
-			return false
-		}
-	}
-
-	// Compare Technologies (Assuming all three are required to match)
-	if len(app.Technology) != len(job.Technology) {
-		return false
-	}
-
-	// Compare Work Modes (Assuming both are ordered lists)
-	if len(app.WorkMode) != len(job.WorkMode) {
-		return false
-	}
-
+	//for i, loc := range app.JobLocations {
+	//	if loc.Location != job.JobLocations[i].Location {
+	//		return false
+	//	}
+	//}
+	//
+	//// Compare Technologies (Assuming all three are required to match)
+	//if len(app.Technology) != len(job.Technology) {
+	//	return false
+	//}
+	//
+	//// Compare Work Modes (Assuming both are ordered lists)
+	//if len(app.WorkMode) != len(job.WorkMode) {
+	//	return false
+	//}
+	//
 	// Compare Max Experience
 	if app.Exp != job.MaxExp {
 		return false
 	}
-
-	// Compare Qualifications (Assuming all five are required to match)
-	if len(app.Qualification) != len(job.Qualification) {
-		return false
-	}
-
+	//
+	//// Compare Qualifications (Assuming all five are required to match)
+	//if len(app.Qualification) != len(job.Qualification) {
+	//	return false
+	//}
+	//
 	// Compare Shift
-	if app.Shift != job.Shift {
-		return false
+	//jobLocations := make(map[string]bool)
+	//for _, jl := range job.JobLocations {
+	//	jobLocations[jl.Location] = true
+	//}
+	//for _, jl := range app.JobLocations {
+	//	if !jobLocations[jl.Location] {
+	//		return false
+	//	}
+	//}
+	value := []string{}
+	for _, v := range app.JobLocations {
+		for _, aa := range v {
+
+		}
 	}
 
-	// Compare Job Type
-	if app.JobType != job.JobType {
+	if len(job.JobType) != len(app.JobType) {
+		return false
+	}
+	if len(job.Shift) != len(app.Shift) {
 		return false
 	}
 
