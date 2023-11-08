@@ -142,5 +142,29 @@ func CriteriaCheck(app models.Application, job models.Job) bool {
 		return false
 	}
 
+	//for notice period
+	if app.NoticePeriod < job.MinNoticePeriod {
+		return false
+	}
+	if app.NoticePeriod > job.MaxNoticePeriod {
+		return false
+	}
+
+	//for technology
+	count3 := 1
+
+	for i, _ := range app.TechnologyIDs {
+		count3 += i
+	}
+	if count3 == 1 {
+		return false
+	}
+	//for job type
+
+	if len(app.JobType) != len(job.JobType) {
+		return false
+	}
+
 	return true
+
 }

@@ -85,7 +85,7 @@ func (mr *MockUserRepoMockRecorder) CreateCompany(ctx, companyData any) *gomock.
 }
 
 // CreateJob mocks base method.
-func (m *MockUserRepo) CreateJob(ctx context.Context, jobData models.Job) (models.Job, error) {
+func (m *MockUserRepo) CreateJob(ctx context.Context, jobData models.NewJob) (models.Job, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateJob", ctx, jobData)
 	ret0, _ := ret[0].(models.Job)
@@ -142,6 +142,21 @@ func (m *MockUserRepo) FindJob(ctx context.Context, cid uint64) ([]models.Job, e
 func (mr *MockUserRepoMockRecorder) FindJob(ctx, cid any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindJob", reflect.TypeOf((*MockUserRepo)(nil).FindJob), ctx, cid)
+}
+
+// GetJobById mocks base method.
+func (m *MockUserRepo) GetJobById(ctx context.Context, jobid uint) (models.Job, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetJobById", ctx, jobid)
+	ret0, _ := ret[0].(models.Job)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetJobById indicates an expected call of GetJobById.
+func (mr *MockUserRepoMockRecorder) GetJobById(ctx, jobid any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetJobById", reflect.TypeOf((*MockUserRepo)(nil).GetJobById), ctx, jobid)
 }
 
 // ViewCompanies mocks base method.

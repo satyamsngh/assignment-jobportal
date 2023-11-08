@@ -156,3 +156,16 @@ func (mr *MockServiceMockRecorder) JobsById(ctx, jobById, userId interface{}) *g
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "api/jobs/:jobID", reflect.TypeOf((*MockService)(nil).JobsById), ctx, jobById, userId)
 }
+
+func (m *MockService) CriteriaMeets(ctx context.Context, applicant []models.Application) ([]models.Application, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "/api/application", ctx, applicant)
+	ret0, _ := ret[0].([]models.Application)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+func (mr *MockServiceMockRecorder) CriteriaMeets(ctx, applicant interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "/api/application", reflect.TypeOf((*MockService)(nil).CriteriaMeets), ctx, applicant)
+}
