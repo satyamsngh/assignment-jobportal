@@ -52,7 +52,7 @@ func (r *Repo) CreateJob(ctx context.Context, jobData models.NewJob) (models.Job
 
 func (r *Repo) FindAllJobs(ctx context.Context) ([]models.Job, error) {
 	var jobs []models.Job
-	result := r.DB.Find(&jobs)
+	result := r.DB.Preload("JobLocations").Preload("Technology").Preload("WorkMode").Preload("Qualification").Find(&jobs)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -102,10 +102,12 @@ func (r *Repo) ViewCompanyById(ctx context.Context, cid uint) ([]models.Companie
 
 func (r *Repo) GetJobById(ctx context.Context, jobid uint) (models.Job, error) {
 	var job models.Job
-	if err := r.DB.Where("id = ?", jobid).First(&job).Error; err != nil {
+	if err := r.DB.Preload("JobLocations").Preload("Technology").Preload("WorkMode").Preload("Qualification").Where("id = ?", jobid).First(&job).Error; err != nil {
 		return models.Job{}, err
 	}
+	log.Print(job)
 	return job, nil
+
 }
 
 //

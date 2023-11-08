@@ -25,8 +25,8 @@ type NewComapanies struct {
 type Job struct {
 	gorm.Model
 	CompanyID       uint             `json:"company_id"`
-	MinNoticePeriod string           `json:"min_notice_period"`
-	MaxNoticePeriod string           `json:"max_notice_period"`
+	MinNoticePeriod uint             `json:"min_notice_period"`
+	MaxNoticePeriod uint             `json:"max_notice_period"`
 	Budget          float64          `json:"budget"`
 	JobLocations    []JobLocation    `gorm:"many2many:job_location_relations;" json:"job_locations"`
 	Technology      []Technologies   `gorm:"many2many:job_technologies_relations;" json:"job_technologies"`
@@ -38,8 +38,8 @@ type Job struct {
 }
 type NewJob struct {
 	CompanyID       uint             `json:"company_id" validate:"required"`
-	MinNoticePeriod string           `json:"min_notice_period" validate:"required"`
-	MaxNoticePeriod string           `json:"max_notice_period" validate:"required"`
+	MinNoticePeriod uint             `json:"min_notice_period" validate:"required"`
+	MaxNoticePeriod uint             `json:"max_notice_period" validate:"required"`
 	Budget          float64          `json:"budget" validate:"required"`
 	JobLocations    []JobLocation    `json:"job_locations" validate:"required"`
 	Technology      []Technologies   `json:"technology" validate:"required"`
@@ -73,20 +73,24 @@ type WorkModes struct {
 }
 
 type Application struct {
-	JobID         uint             `json:"job_id"`
-	Name          string           `json:"name"`
-	Email         string           `json:"email"`
-	Phone         string           `json:"phone"`
-	Resume        string           `json:"resume"`
-	NoticePeriod  int              `json:"notice_period"`
-	Budget        float64          `json:"budget"`
-	JobLocations  []JobLocation    `json:"job_locations"`
-	Technology    []Technologies   `json:"technology"`
-	WorkMode      []WorkModes      `json:"work_mode"`
-	Exp           int              `json:"exp"`
-	Qualification []Qualifications `json:"qualification"`
-	Shift         string           `json:"shift"`
-	JobType       string           `json:"job_type"`
+	JobID            uint    `json:"job_id"`
+	Name             string  `json:"name"`
+	Email            string  `json:"email"`
+	Phone            string  `json:"phone"`
+	Resume           string  `json:"resume"`
+	NoticePeriod     uint    `json:"notice_period"`
+	Budget           float64 `json:"budget"`
+	LocationIDs      []uint  `json:"locationIds"`
+	TechnologyIDs    []uint  `json:"technology"`
+	WorkModeIDs      []uint  `json:"work_mode"`
+	Exp              int     `json:"exp"`
+	QualificationIDs []uint  `json:"qualification"`
+	Shift            string  `json:"shift"`
+	JobType          string  `json:"job_type"`
+}
+
+type ID struct {
+	Id uint
 }
 
 //{

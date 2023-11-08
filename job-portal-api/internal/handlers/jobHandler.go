@@ -166,8 +166,10 @@ func (h *handler) CreateJob(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to create job"})
 		return
 	}
-
-	c.JSON(http.StatusCreated, createdJob)
+	a := models.ID{
+		Id: createdJob.ID,
+	}
+	c.JSON(http.StatusCreated, a)
 }
 func (h *handler) ListJobs(c *gin.Context) {
 	ctx := c.Request.Context()

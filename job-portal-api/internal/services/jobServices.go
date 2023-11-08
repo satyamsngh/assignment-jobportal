@@ -2,8 +2,8 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"job-portal-api/internal/models"
-	"strconv"
 	"sync"
 )
 
@@ -107,15 +107,29 @@ func (s *Store) CriteriaMeets(ctx context.Context, applicant []models.Applicatio
 }
 func CriteriaCheck(app models.Application, job models.Job) bool {
 
-	//Compare Min Notice Period
-	a, _ := strconv.Atoi(job.MinNoticePeriod)
-	if app.NoticePeriod < a {
+	//for location
+	count1 := 0
+	for _, v := range app.LocationIDs {
+		fmt.Println("application", v)
+		for _, c := range job.JobLocations {
+			fmt.Println("job", c.ID)
+			if v == c.ID {
+				count1 += 1
+			}
+		}
+
+	}
+	if count1 == 0 {
 		return false
 	}
 
-	// Compare Max Notice Period
-	a, _ = strconv.Atoi(job.MaxNoticePeriod)
-	if app.NoticePeriod > a {
+	//for qualification
+
+	count2 := 1
+	for i, _ := range app.QualificationIDs {
+		count2 += i
+	}
+	if count2 < 2 {
 		return false
 	}
 
@@ -123,64 +137,8 @@ func CriteriaCheck(app models.Application, job models.Job) bool {
 	if app.Budget > job.Budget {
 		return false
 	}
-	//
-	// Compare Job Locations (Assuming both are ordered lists)
-	//if app.JobLocations[0] != job.JobLocations[0] {
-	//	return false
-	//}
-	//for _,v:=range app.JobLocations{
-	//	for _,c:=range job.JobLocations{
-	//		if
-	//	}
-	//}
 
-	//for i, loc := range app.JobLocations {
-	//	if loc.Location != job.JobLocations[i].Location {
-	//		return false
-	//	}
-	//}
-	//
-	//// Compare Technologies (Assuming all three are required to match)
-	//if len(app.Technology) != len(job.Technology) {
-	//	return false
-	//}
-	//
-	//// Compare Work Modes (Assuming both are ordered lists)
-	//if len(app.WorkMode) != len(job.WorkMode) {
-	//	return false
-	//}
-	//
-	// Compare Max Experience
 	if app.Exp != job.MaxExp {
-		return false
-	}
-	//
-	//// Compare Qualifications (Assuming all five are required to match)
-	//if len(app.Qualification) != len(job.Qualification) {
-	//	return false
-	//}
-	//
-	// Compare Shift
-	//jobLocations := make(map[string]bool)
-	//for _, jl := range job.JobLocations {
-	//	jobLocations[jl.Location] = true
-	//}
-	//for _, jl := range app.JobLocations {
-	//	if !jobLocations[jl.Location] {
-	//		return false
-	//	}
-	//}
-	value := []string{}
-	for _, v := range app.JobLocations {
-		for _, aa := range v {
-
-		}
-	}
-
-	if len(job.JobType) != len(app.JobType) {
-		return false
-	}
-	if len(job.Shift) != len(app.Shift) {
 		return false
 	}
 

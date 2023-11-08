@@ -115,7 +115,7 @@ func (m *MockService) CreateJob(ctx context.Context, newJob models.Job, userId s
 
 func (mr *MockServiceMockRecorder) CreateJob(ctx, newJob interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateJob", reflect.TypeOf((*MockService)(nil).CreateJob), ctx, newJob, userId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateJob", reflect.TypeOf((*MockService)(nil).CreateJob), ctx, newJob)
 }
 
 func (m *MockService) AllJob(ctx context.Context) (models.Job, error) {
