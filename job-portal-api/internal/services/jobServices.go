@@ -138,7 +138,7 @@ func CriteriaCheck(app models.Application, job models.Job) bool {
 		return false
 	}
 
-	if app.Exp != job.MaxExp {
+	if app.Exp > job.MaxExp {
 		return false
 	}
 
@@ -162,6 +162,14 @@ func CriteriaCheck(app models.Application, job models.Job) bool {
 	//for job type
 
 	if len(app.JobType) != len(job.JobType) {
+		return false
+	}
+	//for shift type
+
+	if len(app.Shift) != len(job.Shift) {
+		return false
+	}
+	if len(app.WorkModeIDs) == 0 {
 		return false
 	}
 

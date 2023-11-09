@@ -9,7 +9,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-//go:generate mockgen -source services/service.go -destination services/mock_service.go -package internal/servics
+//go:generate mockgen -source services.go -destination mock_service.go -package services
 
 type Service interface {
 	CreatCompanies(ctx context.Context, nc models.NewComapanies, UserId uint) (models.Companies, error)

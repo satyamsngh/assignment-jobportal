@@ -148,8 +148,6 @@ func (h *handler) CreateJob(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 		return
 	}
-
-	// Set the CompanyID from the URL parameter
 	companyIDStr := c.Param("companyID")
 	companyID, err := strconv.ParseUint(companyIDStr, 10, 64)
 	if err != nil {
@@ -166,10 +164,8 @@ func (h *handler) CreateJob(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to create job"})
 		return
 	}
-	a := models.ID{
-		Id: createdJob.ID,
-	}
-	c.JSON(http.StatusCreated, a)
+	id := models.ID{Id: createdJob.ID}
+	c.JSON(http.StatusCreated, id)
 }
 func (h *handler) ListJobs(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -269,33 +265,12 @@ func (h *handler) AddApplicants(c *gin.Context) {
 		return
 	}
 
-	//claims, ok := ctx.Value(auth.Key).(jwt.RegisteredClaims)
-	//if !ok {
-	//	log.Error().Str("Trace Id", traceID).Msg("login first")
-	//	c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-	//	return
-	//}
-
 	var applicant []models.Application
 	if err := c.ShouldBindJSON(&applicant); err != nil {
 		log.Error().Err(err).Str("Trace Id", traceID).Msg("failed to bind JSON")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
-
-	//_, err := strconv.ParseUint(claims.Subject, 10, 64)
-	//if err != nil {
-	//	log.Error().Err(err).Str("Trace Id", traceID)
-	//	c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
-	//	return
-	//}
-
-	//validate := validator.New()
-	//if err := validate.Struct(applicant); err != nil {
-	//	log.Error().Err(err).Str("Trace Id", traceID).Msg("validation failed")
-	//	c.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed"})
-	//	return
-	//}
 
 	applicationList, err := h.s.CriteriaMeets(ctx, applicant)
 	if err != nil {
