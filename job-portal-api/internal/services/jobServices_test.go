@@ -284,7 +284,7 @@ func TestStore_CriteriaMeets(t *testing.T) {
 			want:    []models.Application{},
 			wantErr: false,
 			setup: func(mockRepo *repository.MockUserRepo) {
-				//mockRepo.EXPECT().GetJobById(gomock.Any(), uint(0)).Return(models.Job{}, errors.New("test error")).Times(1)
+				//mockRepo.EXPECT(3).GetJobById(gomock.Any(), uint(0)).Return(models.Job{}, errors.New("test error")).Times(1)
 				mockRepo.EXPECT().GetJobById(gomock.Any(), uint(1)).Return(models.Job{
 					Model:           gorm.Model{ID: 1},
 					CompanyID:       1,
