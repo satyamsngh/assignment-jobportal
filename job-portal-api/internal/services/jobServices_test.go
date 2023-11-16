@@ -5,6 +5,7 @@ import (
 	"errors"
 	"go.uber.org/mock/gomock"
 	"gorm.io/gorm"
+	"job-portal-api/internal/cache"
 	"job-portal-api/internal/models"
 	"job-portal-api/internal/repository"
 	"reflect"
@@ -618,9 +619,11 @@ func TestStore_CriteriaMeets(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			mc := gomock.NewController(t)
 			mockRepo := repository.NewMockUserRepo(mc)
+			cacheRepo := cache.NewMockUserCache(mc)
 			tt.setup(mockRepo)
 			s := &Store{
-				UserRepo: mockRepo,
+				UserRepo:  mockRepo,
+				UserCache: cacheRepo,
 			}
 			got, err := s.CriteriaMeets(tt.args.ctx, tt.args.applicant)
 			if (err != nil) != tt.wantErr {

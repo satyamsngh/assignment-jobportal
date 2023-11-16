@@ -6,6 +6,8 @@ import (
 	"job-portal-api/internal/models"
 )
 
+//go:generate mockgen -source cache.go -destination mock_cache.go -package cache
+
 type Cache struct {
 	Rd *redis.Client
 }
