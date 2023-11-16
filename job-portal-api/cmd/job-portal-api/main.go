@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 	"job-portal-api/internal/auth"
+	"job-portal-api/internal/cache"
 	"job-portal-api/internal/database"
 	"job-portal-api/internal/handlers"
+	"job-portal-api/internal/redisutil"
 	"job-portal-api/internal/repository"
 
 	"net/http"
@@ -61,6 +63,15 @@ func startApp() error {
 	if err != nil {
 		return fmt.Errorf("Failed to get database instance: %w ", err)
 	}
+	rd, err := redisutil.Redis()
+	if err != nil {
+		return fmt.Errorf("Failed to connect redis: %w", err)
+	}
+	rdb, err := cache.NewCache(rd)
+	if err != nil {
+		log.Print("err")
+		return err
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
@@ -86,7 +97,7 @@ func startApp() error {
 		ReadTimeout:  8000 * time.Second,
 		WriteTimeout: 800 * time.Second,
 		IdleTimeout:  800 * time.Second,
-		Handler:      handlers.API(a, repo),
+		Handler:      handlers.API(a, repo, rdb),
 	}
 
 	serverErrors := make(chan error, 1)

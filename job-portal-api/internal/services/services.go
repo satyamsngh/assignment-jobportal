@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"errors"
+	"job-portal-api/internal/cache"
 	"job-portal-api/internal/models"
 	"job-portal-api/internal/repository"
 
@@ -26,14 +27,19 @@ type Service interface {
 }
 
 type Store struct {
-	UserRepo repository.UserRepo
+	UserRepo  repository.UserRepo
+	UserCache cache.UserCache
 }
 
-func NewStore(userRepo repository.UserRepo) (Service, error) {
+func NewStore(userRepo repository.UserRepo, userCache cache.UserCache) (Service, error) {
 	if userRepo == nil {
 		return nil, errors.New("interface cannot be null")
 	}
+	if userCache == nil {
+		return nil, errors.New("cache interface cannot be null")
+	}
 	return &Store{
-		UserRepo: userRepo,
+		UserRepo:  userRepo,
+		UserCache: userCache,
 	}, nil
 }

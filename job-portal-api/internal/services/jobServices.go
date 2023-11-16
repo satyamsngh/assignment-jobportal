@@ -9,7 +9,6 @@ import (
 	"job-portal-api/internal/models"
 	"strconv"
 	"sync"
-	"time"
 )
 
 func (s *Store) CreatCompanies(ctx context.Context, nc models.NewComapanies, UserID uint) (models.Companies, error) {
@@ -84,25 +83,24 @@ func (s *Store) CriteriaMeets(ctx context.Context, applicant []models.Applicatio
 	ch := make(chan models.Application)
 
 	var wg sync.WaitGroup
-	rd := redis()
 
 	for _, application := range applicant {
 		wg.Add(1)
 		go func(app models.Application) {
 			defer wg.Done()
 			key := strconv.Itoa(int(app.JobID))
-			fmt.Println(key)
-			job, err := CheckRedisKey(rd, key)
+			//fmt.Println(key)
+			job, err := s.UserCache.CheckRedisKey(key)
 			if err != nil {
-				jobs, err := s.UserRepo.GetJobById(ctx, app.JobID)
-				fmt.Println("[[[[[[[", job, "[[[[[[[", err, "]]]]]]]]]]]]]]]]]]]]]]]]")
+				fmt.Println("data not found in cache for ", app.Name)
+				job, err = s.UserRepo.GetJobById(ctx, app.JobID)
 				if err != nil {
 					return
 				}
-				SetRedisKey(rd, key, jobs)
-				job = jobs
-				fmt.Println("[[[[[[[", job)
-				return
+				s.UserCache.SetRedisKey(key, job)
+				//job = jobs
+				//fmt.Println("[[[[[[[", job)
+				//return
 			}
 			if CriteriaCheck(app, job) {
 				ch <- app
@@ -123,17 +121,6 @@ func (s *Store) CriteriaMeets(ctx context.Context, applicant []models.Applicatio
 	return result, nil
 }
 
-func redis() *redis2.Client {
-	rdb := redis2.NewClient(&redis2.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
-
-	})
-	fmt.Println(rdb)
-	return rdb
-}
-
 func CheckRedisKey(rdb *redis2.Client, key string) (models.Job, error) {
 	var ctx = context.Background()
 	val, err := rdb.Get(ctx, key).Result()
@@ -141,28 +128,13 @@ func CheckRedisKey(rdb *redis2.Client, key string) (models.Job, error) {
 		return models.Job{}, err
 
 	}
-	fmt.Println("[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]", val)
+	//fmt.Println("[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]", val)
 	var job models.Job
 	err = json.Unmarshal([]byte(val), &job)
 	if err != nil {
 		log.Err(err)
 	}
 	return job, nil
-}
-func SetRedisKey(rdb *redis2.Client, key string, value models.Job) {
-	var ctx = context.Background()
-	jobdata, err := json.Marshal(value)
-	if err != nil {
-		log.Err(err)
-		return
-	}
-	data := string(jobdata)
-	err = rdb.Set(ctx, key, data, 10*time.Minute).Err()
-	if err != nil {
-		log.Err(err)
-		return
-	}
-
 }
 func CriteriaCheck(app models.Application, job models.Job) bool {
 

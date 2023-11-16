@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	"job-portal-api/internal/auth"
+	"job-portal-api/internal/cache"
 	"job-portal-api/internal/middleware"
 	"job-portal-api/internal/repository"
 	"job-portal-api/internal/services"
@@ -11,7 +12,7 @@ import (
 	"time"
 )
 
-func API(a *auth.Auth, c repository.UserRepo) *gin.Engine {
+func API(a *auth.Auth, c repository.UserRepo, rd cache.UserCache) *gin.Engine {
 	r := gin.New()
 
 	m, err := middlewares.NewMid(a)
@@ -20,7 +21,7 @@ func API(a *auth.Auth, c repository.UserRepo) *gin.Engine {
 		return nil
 	}
 
-	ms, err := services.NewStore(c)
+	ms, err := services.NewStore(c, rd)
 	if err != nil {
 		log.Error().Err(err).Msg("Error setting up services")
 		return nil
