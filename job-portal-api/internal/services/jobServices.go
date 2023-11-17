@@ -2,10 +2,7 @@ package services
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	redis2 "github.com/go-redis/redis/v8"
-	"github.com/rs/zerolog/log"
 	"job-portal-api/internal/models"
 	"strconv"
 	"sync"
@@ -98,9 +95,6 @@ func (s *Store) CriteriaMeets(ctx context.Context, applicant []models.Applicatio
 					return
 				}
 				s.UserCache.SetRedisKey(key, job)
-				//job = jobs
-				//fmt.Println("[[[[[[[", job)
-				//return
 			}
 			if CriteriaCheck(app, job) {
 				ch <- app
@@ -121,21 +115,6 @@ func (s *Store) CriteriaMeets(ctx context.Context, applicant []models.Applicatio
 	return result, nil
 }
 
-func CheckRedisKey(rdb *redis2.Client, key string) (models.Job, error) {
-	var ctx = context.Background()
-	val, err := rdb.Get(ctx, key).Result()
-	if err == redis2.Nil {
-		return models.Job{}, err
-
-	}
-	//fmt.Println("[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]", val)
-	var job models.Job
-	err = json.Unmarshal([]byte(val), &job)
-	if err != nil {
-		log.Err(err)
-	}
-	return job, nil
-}
 func CriteriaCheck(app models.Application, job models.Job) bool {
 
 	//for location

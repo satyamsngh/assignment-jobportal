@@ -97,7 +97,7 @@ func TestStore_CriteriaMeets(t *testing.T) {
 		args    args
 		want    []models.Application
 		wantErr bool
-		setup   func(mockRepo *repository.MockUserRepo)
+		setup   func(mockRepo *repository.MockUserRepo, mockCache *cache.MockUserCache)
 	}{
 		{
 			name: "success",
@@ -284,7 +284,7 @@ func TestStore_CriteriaMeets(t *testing.T) {
 			},
 			want:    []models.Application{},
 			wantErr: false,
-			setup: func(mockRepo *repository.MockUserRepo) {
+			setup: func(mockRepo *repository.MockUserRepo, mockCache *cache.MockUserCache) {
 				//mockRepo.EXPECT(3).GetJobById(gomock.Any(), uint(0)).Return(models.Job{}, errors.New("test error")).Times(1)
 				mockRepo.EXPECT().GetJobById(gomock.Any(), uint(1)).Return(models.Job{
 					Model:           gorm.Model{ID: 1},
@@ -536,10 +536,10 @@ func TestStore_CriteriaMeets(t *testing.T) {
 				ctx: context.Background(),
 				applicant: []models.Application{
 					{
-						JobID:            0,
-						Name:             "John",
-						Email:            "john@gmail.com",
-						Phone:            "1234567890",
+						JobID:            1,
+						Name:             "Monika",
+						Email:            "monika@gmail.com",
+						Phone:            "3434343434",
 						Resume:           "",
 						NoticePeriod:     15,
 						Budget:           400000,
@@ -551,6 +551,73 @@ func TestStore_CriteriaMeets(t *testing.T) {
 						Shift:            "Day",
 						JobType:          "Remote",
 					},
+				},
+			},
+			want: []models.Application{
+				{
+					JobID:            1,
+					Name:             "Monika",
+					Email:            "monika@gmail.com",
+					Phone:            "3434343434",
+					Resume:           "",
+					NoticePeriod:     15,
+					Budget:           400000,
+					LocationIDs:      []uint{1},
+					TechnologyIDs:    []uint{1, 2},
+					WorkModeIDs:      []uint{1},
+					Exp:              2,
+					QualificationIDs: []uint{1, 2},
+					Shift:            "Day",
+					JobType:          "Remote",
+				},
+			},
+			wantErr: false,
+			setup: func(mockRepo *repository.MockUserRepo, mockCache *cache.MockUserCache) {
+				mockCache.EXPECT().CheckRedisKey("1").Return(models.Job{
+					CompanyID:       1,
+					MinNoticePeriod: 0,
+					MaxNoticePeriod: 60,
+					Budget:          600000,
+					JobLocations: []models.JobLocation{
+						{Model: gorm.Model{ID: 1}},
+					},
+					Technology: []models.Technologies{
+						{Model: gorm.Model{ID: 1}},
+					},
+					WorkMode: []models.WorkModes{
+						{Model: gorm.Model{ID: 1}},
+					},
+					MaxExp: 3,
+					Qualification: []models.Qualifications{
+						{Model: gorm.Model{ID: 1}},
+					},
+					Shift:   "Day",
+					JobType: "Remote",
+				}, nil).Times(1)
+
+			},
+		},
+		{
+			name: "successss",
+			args: args{
+				ctx: context.Background(),
+				applicant: []models.Application{
+					//{
+					//	JobID:            0,
+					//	Name:             "John",
+					//	Email:            "john@gmail.com",
+					//	Phone:            "1234567890",
+					//	Resume:           "",
+					//	NoticePeriod:     15,
+					//	Budget:           400000,
+					//	LocationIDs:      []uint{1},
+					//	TechnologyIDs:    []uint{1, 2},
+					//	WorkModeIDs:      []uint{1},
+					//	Exp:              2,
+					//	QualificationIDs: []uint{1, 2},
+					//	Shift:            "Day",
+					//	JobType:          "Remote",
+					//},
 					{
 						JobID:            1,
 						Name:             "Monika",
@@ -588,8 +655,9 @@ func TestStore_CriteriaMeets(t *testing.T) {
 				},
 			},
 			wantErr: false,
-			setup: func(mockRepo *repository.MockUserRepo) {
-				mockRepo.EXPECT().GetJobById(gomock.Any(), uint(0)).Return(models.Job{}, errors.New("test error")).Times(1)
+			setup: func(mockRepo *repository.MockUserRepo, mockCache *cache.MockUserCache) {
+				mockCache.EXPECT().CheckRedisKey("1").Return(models.Job{}, errors.New("")).Times(1)
+				//mockRepo.EXPECT().GetJobById(gomock.Any(), uint(0)).Return(models.Job{}, errors.New("test error")).Times(1)
 				mockRepo.EXPECT().GetJobById(gomock.Any(), uint(1)).Return(models.Job{
 					Model:           gorm.Model{ID: 1},
 					CompanyID:       1,
@@ -612,6 +680,29 @@ func TestStore_CriteriaMeets(t *testing.T) {
 					Shift:   "Day",
 					JobType: "Remote",
 				}, nil).Times(1)
+				mockCache.EXPECT().SetRedisKey("1", models.Job{
+					Model:           gorm.Model{ID: 1},
+					CompanyID:       1,
+					MinNoticePeriod: 0,
+					MaxNoticePeriod: 60,
+					Budget:          600000,
+					JobLocations: []models.JobLocation{
+						{Model: gorm.Model{ID: 1}},
+					},
+					Technology: []models.Technologies{
+						{Model: gorm.Model{ID: 1}},
+					},
+					WorkMode: []models.WorkModes{
+						{Model: gorm.Model{ID: 1}},
+					},
+					MaxExp: 3,
+					Qualification: []models.Qualifications{
+						{Model: gorm.Model{ID: 1}},
+					},
+					Shift:   "Day",
+					JobType: "Remote",
+				})
+
 			},
 		},
 	}
@@ -620,7 +711,7 @@ func TestStore_CriteriaMeets(t *testing.T) {
 			mc := gomock.NewController(t)
 			mockRepo := repository.NewMockUserRepo(mc)
 			cacheRepo := cache.NewMockUserCache(mc)
-			tt.setup(mockRepo)
+			tt.setup(mockRepo, cacheRepo)
 			s := &Store{
 				UserRepo:  mockRepo,
 				UserCache: cacheRepo,
