@@ -5,6 +5,7 @@ import (
 	"errors"
 	"job-portal-api/internal/cache"
 	"job-portal-api/internal/models"
+	"job-portal-api/internal/otputil"
 	"job-portal-api/internal/repository"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -24,22 +25,30 @@ type Service interface {
 		error)
 	JobsByID(ctx context.Context, jobID uint64, userId string) (models.Job, error)
 	CriteriaMeets(ctx context.Context, applicant []models.Application) ([]models.Application, error)
+	VerifyOtpService(details models.ResetPasswordRequest) (bool, error)
+	OtpService(details models.ResetRequest) (string, error)
 }
 
 type Store struct {
 	UserRepo  repository.UserRepo
 	UserCache cache.UserCache
+	UserOtp   otputil.UserOtp
 }
 
-func NewStore(userRepo repository.UserRepo, userCache cache.UserCache) (Service, error) {
+func NewStore(userRepo repository.UserRepo, userCache cache.UserCache, userOtp otputil.UserOtp) (Service, error) {
 	if userRepo == nil {
 		return nil, errors.New("interface cannot be null")
 	}
 	if userCache == nil {
 		return nil, errors.New("cache interface cannot be null")
 	}
+
+	if userOtp == nil {
+		return nil, errors.New("otp interface cannot be null")
+	}
 	return &Store{
 		UserRepo:  userRepo,
 		UserCache: userCache,
+		UserOtp:   userOtp,
 	}, nil
 }

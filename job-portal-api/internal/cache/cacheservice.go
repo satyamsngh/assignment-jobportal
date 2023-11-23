@@ -38,3 +38,22 @@ func (c *Cache) SetRedisKey(key string, value models.Job) {
 	}
 
 }
+func (c *Cache) SetRedisKeyOtp(key string, value string) {
+	var ctx = context.Background()
+	err := c.Rd.Set(ctx, key, value, 10*time.Minute).Err()
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+}
+func (c *Cache) GetRedisKeyOtp(key string) (string, error) {
+	var ctx = context.Background()
+	val, err := c.Rd.Get(ctx, key).Result()
+	if err != nil {
+		log.Err(err)
+		return "", err
+
+	}
+	return val, nil
+}

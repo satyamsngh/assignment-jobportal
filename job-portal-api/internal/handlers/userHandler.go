@@ -2,15 +2,14 @@ package handlers
 
 import (
 	"encoding/json"
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
+	"github.com/rs/zerolog/log"
 	"job-portal-api/internal/auth"
 	middlewares "job-portal-api/internal/middleware"
 	"job-portal-api/internal/models"
 	"job-portal-api/internal/services"
 	"net/http"
-
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
-	"github.com/rs/zerolog/log"
 )
 
 type handler struct {
@@ -102,4 +101,46 @@ func (h *handler) Login(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, tkn.Token)
+}
+func (h *handler) RequestPasswordReset(c *gin.Context) {
+	ctx := c.Request.Context()
+	traceId, ok := ctx.Value(middlewares.TraceIdKey).(string)
+	if !ok {
+		log.Error().Msg("traceId missing from context")
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": http.StatusText(http.StatusInternalServerError)})
+		return
+	}
+	var resetRequest models.ResetRequest
+	err := json.NewDecoder(c.Request.Body).Decode(&resetRequest)
+	if err != nil {
+		log.Error().Err(err).Str("Trace Id", traceId)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": http.StatusText(http.StatusInternalServerError)})
+		return
+	}
+	validate := validator.New()
+	err = validate.Struct(resetRequest)
+	if err != nil {
+		log.Error().Err(err).Str("Trace Id", traceId).Send()
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"msg": "please provide Email and Password"})
+		return
+	}
+}
+func (h *handler) ResetPassword(c *gin.Context) {
+	// Parse the request body to get the email, otp, and new password
+	var resetPasswordRequest models.ResetPasswordRequest
+	if err := c.ShouldBindJSON(&resetPasswordRequest); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	a, err := h.s.VerifyOtpService(resetPasswordRequest)
+	if err != nil {
+		log.Error().Err(err)
+		return
+	}
+	if !a {
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Password reset successfully"})
 }

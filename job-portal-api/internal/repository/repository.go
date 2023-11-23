@@ -6,6 +6,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"gorm.io/gorm"
 	"job-portal-api/internal/models"
+	"time"
 )
 
 type Repo struct {
@@ -16,6 +17,8 @@ type Repo struct {
 type UserRepo interface {
 	CreateUser(ctx context.Context, userData models.User) (models.User, error)
 	CheckEmail(ctx context.Context, email string, password string) (jwt.RegisteredClaims, error)
+	IsUserPresentByEmailAndDOB(email string, dob time.Time) (string, error)
+	ResetPasswordByEmail(email, newPassword string) error
 
 	CreateCompany(ctx context.Context, companyData models.Companies) (models.Companies, error)
 	ViewCompanies(ctx context.Context) ([]models.Companies, error)

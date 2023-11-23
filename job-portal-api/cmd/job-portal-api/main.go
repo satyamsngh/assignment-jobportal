@@ -32,7 +32,7 @@ func main() {
 func startApp() error {
 	Config := config.GetConfig()
 	log.Info().Msg("main : Started : Initializing authentication support")
-	privatePEM, err := os.ReadFile("private.pem")
+	privatePEM, err := os.ReadFile(Config.KeyConfig.PrivateKeyPath)
 	if err != nil {
 		return fmt.Errorf("reading auth private key %w", err)
 	}
@@ -41,7 +41,7 @@ func startApp() error {
 		return fmt.Errorf("parsing auth private key %w", err)
 	}
 
-	publicPEM, err := os.ReadFile("pubkey.pem")
+	publicPEM, err := os.ReadFile(Config.KeyConfig.PublicKeyPath)
 	if err != nil {
 		return fmt.Errorf("reading auth public key %w", err)
 	}

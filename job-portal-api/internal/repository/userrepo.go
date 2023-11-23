@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"job-portal-api/internal/models"
@@ -41,4 +42,37 @@ func (r *Repo) CheckEmail(ctx context.Context, email string, password string) (j
 	}
 	return c, nil
 
+}
+func (r *Repo) IsUserPresentByEmailAndDOB(email string, dob time.Time) (string, error) {
+	var count int64
+	result := r.DB.Where("email = ? AND date_of_birth = ?", email, dob).Model(&models.User{}).Count(&count)
+	if result.Error != nil {
+		return "", result.Error
+	}
+
+	if count > 0 {
+		return "yes, data is present", nil
+	}
+
+	return "no, data is not present", nil
+}
+func (r *Repo) ResetPasswordByEmail(email, newPassword string) error {
+	// Fetch the user by email from the database
+	var user models.User
+	if err := r.DB.Where("email = ?", email).First(&user).Error; err != nil {
+		return fmt.Errorf("failed to find user: %v", err)
+	}
+
+	// Hash the new password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return fmt.Errorf("failed to hash password: %v", err)
+	}
+
+	// Update the user's password hash in the database
+	if err := r.DB.Model(&user).Update("password_hash", string(hashedPassword)).Error; err != nil {
+		return fmt.Errorf("failed to update password: %v", err)
+	}
+
+	return nil
 }

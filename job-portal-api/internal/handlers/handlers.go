@@ -6,13 +6,14 @@ import (
 	"job-portal-api/internal/auth"
 	"job-portal-api/internal/cache"
 	"job-portal-api/internal/middleware"
+	"job-portal-api/internal/otputil"
 	"job-portal-api/internal/repository"
 	"job-portal-api/internal/services"
 	"net/http"
 	"time"
 )
 
-func API(a *auth.Auth, c repository.UserRepo, rd cache.UserCache) *gin.Engine {
+func API(a *auth.Auth, c repository.UserRepo, rd cache.UserCache, od otputil.UserOtp) *gin.Engine {
 	r := gin.New()
 
 	m, err := middlewares.NewMid(a)
@@ -21,7 +22,7 @@ func API(a *auth.Auth, c repository.UserRepo, rd cache.UserCache) *gin.Engine {
 		return nil
 	}
 
-	ms, err := services.NewStore(c, rd)
+	ms, err := services.NewStore(c, rd, od)
 	if err != nil {
 		log.Error().Err(err).Msg("Error setting up services")
 		return nil

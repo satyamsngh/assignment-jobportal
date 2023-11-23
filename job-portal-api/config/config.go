@@ -12,6 +12,7 @@ type Config struct {
 	AppConfig   AppConfig
 	DataConfig  DataConfig
 	RedisConfig RedisConfig
+	KeyConfig   KeyConfig
 }
 
 type AppConfig struct {
@@ -32,6 +33,10 @@ type RedisConfig struct {
 	Port     string `env:"REDIS_PORT,default=6379"`
 	Password string `env:"REDIS_PASSWORD,default=false"`
 	DB       int    `env:"REDIS_DB,default=false"`
+}
+type KeyConfig struct {
+	PublicKeyPath  string `env:"PUBLIC_KEY_PATH" envDefault:""`
+	PrivateKeyPath string `env:"PRIVATE_KEY_PATH" envDefault:""`
 }
 
 func init() {
