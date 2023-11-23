@@ -3,14 +3,18 @@ package redisutil
 import (
 	"context"
 	"fmt"
+	"job-portal-api/config"
+
 	"github.com/go-redis/redis/v8"
 )
 
-func Redis() (*redis.Client, error) {
+func Redis(config config.RedisConfig) (*redis.Client, error) {
+	fmt.Print("===========================", config.Host, config.Port)
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
+		Addr: fmt.Sprintf("%s:%s", config.Host, config.Port),
+
+		Password: config.Password,
+		DB:       config.DB,
 	})
 
 	// Use Ping to check if the Redis connection is successful

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"job-portal-api/config"
 	"job-portal-api/internal/auth"
 	"job-portal-api/internal/cache"
 	"job-portal-api/internal/database"
@@ -29,6 +30,7 @@ func main() {
 }
 
 func startApp() error {
+	Config := config.GetConfig()
 	log.Info().Msg("main : Started : Initializing authentication support")
 	privatePEM, err := os.ReadFile("private.pem")
 	if err != nil {
@@ -55,7 +57,8 @@ func startApp() error {
 	}
 
 	log.Info().Msg("main : Started : Initializing db support")
-	db, err := database.Open()
+	dataConfig := Config.DataConfig
+	db, err := database.Open(dataConfig)
 	if err != nil {
 		return fmt.Errorf("connecting to db %w", err)
 	}
@@ -63,7 +66,8 @@ func startApp() error {
 	if err != nil {
 		return fmt.Errorf("Failed to get database instance: %w ", err)
 	}
-	rd, err := redisutil.Redis()
+	redisConfig := Config.RedisConfig
+	rd, err := redisutil.Redis(redisConfig)
 	if err != nil {
 		return fmt.Errorf("Failed to connect redis: %w", err)
 	}
@@ -93,7 +97,7 @@ func startApp() error {
 	}
 
 	api := http.Server{
-		Addr:         ":8080",
+		Addr:         fmt.Sprintf(":%s", Config.AppConfig.Port),
 		ReadTimeout:  8000 * time.Second,
 		WriteTimeout: 800 * time.Second,
 		IdleTimeout:  800 * time.Second,
