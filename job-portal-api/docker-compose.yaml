@@ -11,8 +11,10 @@ services:
       - "8080:8080"
     env_file:
       - .env
+      - .key.env
       - .app.postgres.env
       - .app.redis.env
+      - .app.otp.env
     depends_on:
       - postgres
       - redis
@@ -25,6 +27,9 @@ services:
     restart: always
     env_file:
       - .postgres.env
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
   redis:
     container_name: redis
     image: redis
@@ -33,3 +38,14 @@ services:
     env_file:
       - .redis.env
     restart: always
+  # smtp:
+  #   container_name: smtp
+  #   image: smtp
+  #   ports:
+  #     - "587:587"
+  #   env_file:
+  #     - .otp.env
+  #   restart: always
+
+volumes:
+  postgres-data:

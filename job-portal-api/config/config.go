@@ -9,10 +9,11 @@ import (
 var cfg Config
 
 type Config struct {
-	AppConfig   AppConfig
-	DataConfig  DataConfig
-	RedisConfig RedisConfig
-	KeyConfig   KeyConfig
+	AppConfig          AppConfig
+	DataConfig         DataConfig
+	RedisConfig        RedisConfig
+	KeyConfig          KeyConfig
+	OtpGeneratorConfig OtpGeneratorConfig
 }
 
 type AppConfig struct {
@@ -35,8 +36,11 @@ type RedisConfig struct {
 	DB       int    `env:"REDIS_DB,default=false"`
 }
 type KeyConfig struct {
-	PublicKeyPath  string `env:"PUBLIC_KEY_PATH" envDefault:""`
-	PrivateKeyPath string `env:"PRIVATE_KEY_PATH" envDefault:""`
+	PublicKeyPath  string `env:"PUBLIC_KEY_PATH"`
+	PrivateKeyPath string `env:"PRIVATE_KEY_PATH"`
+}
+type OtpGeneratorConfig struct {
+	Port int `env:"APP_PORT_SMTP,required=true"`
 }
 
 func init() {

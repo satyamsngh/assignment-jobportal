@@ -25,8 +25,8 @@ type Service interface {
 		error)
 	JobsByID(ctx context.Context, jobID uint64, userId string) (models.Job, error)
 	CriteriaMeets(ctx context.Context, applicant []models.Application) ([]models.Application, error)
-	VerifyOtpService(details models.ResetPasswordRequest) (bool, error)
-	OtpService(details models.ResetRequest) (string, error)
+	VerifyOtpService(details models.ResetPasswordRequest) error
+	OtpService(details models.ResetRequest) error
 }
 
 type Store struct {

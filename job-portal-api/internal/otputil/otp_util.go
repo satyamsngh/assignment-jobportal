@@ -7,17 +7,19 @@ import (
 	"time"
 )
 
-func (o *Otp) GenerateOtp(email string) string {
+func (o Otp) GenerateOtp(email string) (string, error) {
 	// Sender's email address and password
-	from := "your-email@gmail.com"
-	password := "your-email-password"
+	from := "satyamdg18577@gmail.com"
+	password := "ixlj zbcm fgwk tjta"
 
 	// Recipient's email address
+	fmt.Println("++++++++++++++++++++++", email)
 	to := email
 
 	// SMTP server details for Gmail
 	smtpServer := "smtp.gmail.com"
-	smtpPort := 587
+	fmt.Print("==============", o.Rd)
+	smtpPort := o.Rd
 
 	// Seed the random number generator
 	rand.Seed(time.Now().UnixNano())
@@ -38,9 +40,9 @@ func (o *Otp) GenerateOtp(email string) string {
 	err := smtp.SendMail(smtpAddr, auth, from, []string{to}, message)
 	if err != nil {
 		fmt.Println("Error sending email:", err)
-		return ""
+		return "", fmt.Errorf("failed to send OTP email: %v", err)
 	}
 
 	fmt.Println("Email sent successfully!")
-	return fmt.Sprintf("%06d", randomNumber)
+	return fmt.Sprintf("%06d", randomNumber), nil
 }

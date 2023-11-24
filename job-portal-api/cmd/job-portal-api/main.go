@@ -8,6 +8,7 @@ import (
 	"job-portal-api/internal/cache"
 	"job-portal-api/internal/database"
 	"job-portal-api/internal/handlers"
+	"job-portal-api/internal/otputil"
 	"job-portal-api/internal/redisutil"
 	"job-portal-api/internal/repository"
 
@@ -32,19 +33,32 @@ func main() {
 func startApp() error {
 	Config := config.GetConfig()
 	log.Info().Msg("main : Started : Initializing authentication support")
-	privatePEM, err := os.ReadFile(Config.KeyConfig.PrivateKeyPath)
-	if err != nil {
-		return fmt.Errorf("reading auth private key %w", err)
+	fmt.Printf("%t=================================", Config.KeyConfig.PrivateKeyPath)
+	fmt.Println("===============", Config.KeyConfig.PrivateKeyPath)
+
+	privatePEM := Config.KeyConfig.PrivateKeyPath
+	// if err != nil {
+	// 	return fmt.Errorf("reading auth private key %w", err)
+	// }
+
+	if len(privatePEM) == 0 {
+		return fmt.Errorf("error: Private key content is empty")
+
 	}
-	privateKey, err := jwt.ParseRSAPrivateKeyFromPEM(privatePEM)
+	privateKey, err := jwt.ParseRSAPrivateKeyFromPEM([]byte(privatePEM))
 	if err != nil {
 		return fmt.Errorf("parsing auth private key %w", err)
 	}
 
-	publicPEM, err := os.ReadFile(Config.KeyConfig.PublicKeyPath)
-	if err != nil {
-		return fmt.Errorf("reading auth public key %w", err)
+	publicPEM := []byte(Config.KeyConfig.PublicKeyPath)
+
+	if len(privatePEM) == 0 {
+		return fmt.Errorf("error: Public key content is empty")
+
 	}
+	// if err != nil {
+	// 	return fmt.Errorf("reading auth public key %w", err)
+	// }
 
 	publicKey, err := jwt.ParseRSAPublicKeyFromPEM(publicPEM)
 	if err != nil {
@@ -64,12 +78,12 @@ func startApp() error {
 	}
 	pg, err := db.DB()
 	if err != nil {
-		return fmt.Errorf("Failed to get database instance: %w ", err)
+		return fmt.Errorf("failed to get database instance: %w ", err)
 	}
 	redisConfig := Config.RedisConfig
 	rd, err := redisutil.Redis(redisConfig)
 	if err != nil {
-		return fmt.Errorf("Failed to connect redis: %w", err)
+		return fmt.Errorf("failed to connect redis: %w", err)
 	}
 	rdb, err := cache.NewCache(rd)
 	if err != nil {
@@ -81,7 +95,7 @@ func startApp() error {
 
 	err = pg.PingContext(ctx)
 	if err != nil {
-		return fmt.Errorf("Database is not connected: %w ", err)
+		return fmt.Errorf("database is not connected: %w ", err)
 	}
 
 	repo, err := repository.NewRepository(db)
@@ -95,13 +109,17 @@ func startApp() error {
 		log.Print(err)
 		return err
 	}
+	verify, err := otputil.NewOtp(Config.OtpGeneratorConfig.Port)
+	if err != nil {
+		return err
+	}
 
 	api := http.Server{
 		Addr:         fmt.Sprintf(":%s", Config.AppConfig.Port),
 		ReadTimeout:  8000 * time.Second,
 		WriteTimeout: 800 * time.Second,
 		IdleTimeout:  800 * time.Second,
-		Handler:      handlers.API(a, repo, rdb),
+		Handler:      handlers.API(a, repo, rdb, verify),
 	}
 
 	serverErrors := make(chan error, 1)

@@ -15,8 +15,9 @@ type Cache struct {
 type UserCache interface {
 	SetRedisKey(key string, value models.Job)
 	CheckRedisKey(key string) (models.Job, error)
-	SetRedisKeyOtp(key string, value string)
+	SetRedisKeyOtp(key string, value string) error
 	GetRedisKeyOtp(key string) (string, error)
+	DelRedisKey(email string) error
 }
 
 func NewCache(rd *redis.Client) (UserCache, error) {

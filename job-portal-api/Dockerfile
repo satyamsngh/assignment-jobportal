@@ -19,5 +19,6 @@ WORKDIR /app
 COPY --from=builder /app/server .
 COPY --from=builder /app/private.pem .
 COPY --from=builder /app/pubkey.pem .
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 CMD [ "./server" ]

@@ -38,6 +38,8 @@ func API(a *auth.Auth, c repository.UserRepo, rd cache.UserCache, od otputil.Use
 	r.GET("api/check", m.Authenticate(check))
 	r.POST("api/register", h.Register)
 	r.POST("api/login", h.Login)
+	r.POST("api/resetpassword", h.RequestPasswordReset)
+	r.POST("aoi/verifyotp", h.ResetPassword)
 	r.POST("/api/listcompanies", m.Authenticate(h.AddCompanies))
 	r.GET("/api/viewcompanies", m.Authenticate(h.ViewCompanies))
 	r.GET("/api/companies/:companyID", m.Authenticate(h.ViewCompaniesById))
