@@ -159,6 +159,35 @@ func (mr *MockUserRepoMockRecorder) GetJobById(ctx, jobid any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetJobById", reflect.TypeOf((*MockUserRepo)(nil).GetJobById), ctx, jobid)
 }
 
+// IsUserPresentByEmail mocks base method.
+func (m *MockUserRepo) IsUserPresentByEmail(email string) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "IsUserPresentByEmail", email)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// IsUserPresentByEmail indicates an expected call of IsUserPresentByEmail.
+func (mr *MockUserRepoMockRecorder) IsUserPresentByEmail(email any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsUserPresentByEmail", reflect.TypeOf((*MockUserRepo)(nil).IsUserPresentByEmail), email)
+}
+
+// ResetPasswordByEmail mocks base method.
+func (m *MockUserRepo) ResetPasswordByEmail(email, newPassword string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ResetPasswordByEmail", email, newPassword)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ResetPasswordByEmail indicates an expected call of ResetPasswordByEmail.
+func (mr *MockUserRepoMockRecorder) ResetPasswordByEmail(email, newPassword any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ResetPasswordByEmail", reflect.TypeOf((*MockUserRepo)(nil).ResetPasswordByEmail), email, newPassword)
+}
+
 // ViewCompanies mocks base method.
 func (m *MockUserRepo) ViewCompanies(ctx context.Context) ([]models.Companies, error) {
 	m.ctrl.T.Helper()

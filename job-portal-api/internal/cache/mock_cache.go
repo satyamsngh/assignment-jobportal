@@ -53,6 +53,35 @@ func (mr *MockUserCacheMockRecorder) CheckRedisKey(key any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckRedisKey", reflect.TypeOf((*MockUserCache)(nil).CheckRedisKey), key)
 }
 
+// DelRedisKey mocks base method.
+func (m *MockUserCache) DelRedisKey(email string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DelRedisKey", email)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DelRedisKey indicates an expected call of DelRedisKey.
+func (mr *MockUserCacheMockRecorder) DelRedisKey(email any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DelRedisKey", reflect.TypeOf((*MockUserCache)(nil).DelRedisKey), email)
+}
+
+// GetRedisKeyOtp mocks base method.
+func (m *MockUserCache) GetRedisKeyOtp(key string) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetRedisKeyOtp", key)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetRedisKeyOtp indicates an expected call of GetRedisKeyOtp.
+func (mr *MockUserCacheMockRecorder) GetRedisKeyOtp(key any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRedisKeyOtp", reflect.TypeOf((*MockUserCache)(nil).GetRedisKeyOtp), key)
+}
+
 // SetRedisKey mocks base method.
 func (m *MockUserCache) SetRedisKey(key string, value models.Job) {
 	m.ctrl.T.Helper()
@@ -63,4 +92,18 @@ func (m *MockUserCache) SetRedisKey(key string, value models.Job) {
 func (mr *MockUserCacheMockRecorder) SetRedisKey(key, value any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetRedisKey", reflect.TypeOf((*MockUserCache)(nil).SetRedisKey), key, value)
+}
+
+// SetRedisKeyOtp mocks base method.
+func (m *MockUserCache) SetRedisKeyOtp(key, value string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetRedisKeyOtp", key, value)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SetRedisKeyOtp indicates an expected call of SetRedisKeyOtp.
+func (mr *MockUserCacheMockRecorder) SetRedisKeyOtp(key, value any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetRedisKeyOtp", reflect.TypeOf((*MockUserCache)(nil).SetRedisKeyOtp), key, value)
 }

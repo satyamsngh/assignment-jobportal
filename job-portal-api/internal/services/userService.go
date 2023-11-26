@@ -6,10 +6,13 @@ import (
 	"fmt"
 	"job-portal-api/internal/models"
 	"log"
+	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
+
+var otpTime time.Time
 
 func (s *Store) CreateUser(ctx context.Context, nu models.NewUser) (models.User, error) {
 
@@ -58,34 +61,41 @@ func (s *Store) OtpService(details models.ResetRequest) error {
 		errs := errors.New("user not present in the database")
 		return errs
 	}
-
-	// Generate OTP
 	generatedOtp, err := s.UserOtp.GenerateOtp(details.Email)
 	if err != nil {
 		// Log the error
 		log.Printf("Error generating OTP: %v", err)
 		return err
 	}
-
-	// Set OTP in the cache
 	err = s.UserCache.SetRedisKeyOtp(details.Email, generatedOtp)
 	if err != nil {
 		// Log the error
 		log.Printf("Error setting OTP in cache: %v", err)
 		return err
 	}
-
-	// Log success and return a message
 	log.Printf("OTP sent successfully for email %s", details.Email)
+	otpTime = time.Now()
 	return nil
 }
 
 func (s *Store) VerifyOtpService(details models.ResetPasswordRequest) error {
+	//nowTime := time.Now()
+	//duration := nowTime.Sub(otpTime)
+	//fmt.Println(duration)
+	//if duration <= time.Minute {
+	//	fmt.Println("otp is valid")
+	//} else {
+	//	err := s.UserCache.DelRedisKey(details.Email)
+	//	if err != nil {
+	//		return err
+	//	}
+	//	errs := errors.New("otp expired regenerate otp")
+	//	return errs
+	//}
 	storedOtp, err := s.UserCache.GetRedisKeyOtp(details.Email)
 	if err != nil {
 		return err
 	}
-
 	if details.Otp != storedOtp {
 		errs := errors.New("otp is incorrect")
 		return errs
@@ -94,17 +104,10 @@ func (s *Store) VerifyOtpService(details models.ResetPasswordRequest) error {
 		errs := errors.New("password not match,retry")
 		return errs
 	}
-
 	err = s.UserRepo.ResetPasswordByEmail(details.Email, details.NewPassword)
 	if err != nil {
 		return err
 	}
-
-	// Delete the OTP from Redis after successful password reset
-	//err = s.RedisClient.Del(context.
-	//if err != nil {
-	//	return true, fmt.Errorf("failed to delete OTP from Redis: %v", err)
-	//}
 	err = s.UserCache.DelRedisKey(details.Email)
 	if err != nil {
 		return err

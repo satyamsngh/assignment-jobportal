@@ -8,6 +8,7 @@ type Otp struct {
 	Rd int
 }
 
+//go:generate mockgen -source otp.go -destination mock_otputil.go -package otputil
 type UserOtp interface {
 	GenerateOtp(email string) (string, error)
 }

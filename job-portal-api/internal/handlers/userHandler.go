@@ -130,25 +130,30 @@ func (h *handler) RequestPasswordReset(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"msg": "signup first"})
 		return
 	}
-	s := "otp send successfully"
-	c.JSON(http.StatusOK, s)
+
+	c.JSON(http.StatusOK, gin.H{"msg": "Successfully changed the password"})
 }
 func (h *handler) ResetPassword(c *gin.Context) {
-
-	// Parse the request body to get the email, otp, and new password
+	ctx := c.Request.Context()
+	traceId, ok := ctx.Value(middlewares.TraceIdKey).(string)
+	if !ok {
+		log.Error().Msg("traceId missing from context")
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": http.StatusText(http.StatusInternalServerError)})
+		return
+	}
 	var resetPasswordRequest models.ResetPasswordRequest
-	if err := c.ShouldBindJSON(&resetPasswordRequest); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"msg": "provide valid details"})
+	err := json.NewDecoder(c.Request.Body).Decode(&resetPasswordRequest)
+	if err != nil {
+		log.Error().Err(err).Str("Trace Id", traceId)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": http.StatusText(http.StatusInternalServerError)})
 		return
 	}
 
-	err := h.s.VerifyOtpService(resetPasswordRequest)
+	err = h.s.VerifyOtpService(resetPasswordRequest)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "unable to verify otp"})
 		return
 	}
 
-	a := "Successfully changed the password"
-
-	c.JSON(http.StatusOK, a)
+	c.JSON(http.StatusOK, gin.H{"msg": "Successfully changed the password"})
 }
